@@ -1,5 +1,19 @@
 <div class="app">
   <p>App</p>
+  QTY - {{quantity()}}
+  <div>
+    <select
+      [ngModel]="quantity()"
+      (change)="onQuantitySelected($any($event.target).value)">
+      <option disabled value="">Select a Qty</option>
+      <option *ngFor="let q of qtyAvailable()">{{q}}</option>
+    </select>
+
+    <div>Vehicle: {{ selectedVehicle().name}}</div>
+    <div>Price: {{ selectedVehicle().price | number: '1.2-2'}}</div>
+    <div style="font-weight: bold" [style.color]="color()">Total: {{ exPrice() | number: '1.2-2' }}</div>
+
+  </div>
   <router-outlet></router-outlet>
   <footer>
     © CopyRights to PR

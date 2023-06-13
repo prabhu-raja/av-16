@@ -1,6 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal, computed, effect, inject } from '@angular/core';
 import { filter, interval, map, mapTo, scan, takeWhile, tap } from 'rxjs';
 
+interface Vehicle {
+  id: number;
+  name: string;
+  price: number;
+}
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -8,11 +13,51 @@ import { filter, interval, map, mapTo, scan, takeWhile, tap } from 'rxjs';
 })
 export class AppComponent implements OnInit {
   title = 'av-16';
+  quantity = signal(1);
+  qtyAvailable = signal([1, 2, 3, 4, 5, 6]);
+  selectedVehicle = signal<Vehicle>({id: 1, name: 'VW', price: 10000});
+  vehicle = signal<Vehicle[]>([]);
+  exPrice = computed(() => this.selectedVehicle().price * this.quantity());
+  color = computed(() => this.exPrice() > 50000 ? 'green' : 'blue');
+
+  constructor() {
+    this.selectedVehicle.mutate(val => val.price = val.price + (val.price * 0.2));
+
+  }
 
   ngOnInit(): void {
-    this.playCountDowntimer();
-    this.findMario();
-    this.update()
+    // this.test();
+    // this.testSignal();
+    // this.playCountDowntimer();
+    // this.findMario();
+    // this.update()
+
+  }
+
+  qtyEff = effect(() => console.log('Latest Qty from Effect', this.quantity()));
+  
+  onQuantitySelected(qty: number) {
+    this.quantity.set(qty);
+  }
+
+  test() {
+    let x = 5;
+    let y = 3;
+    let z = x + y;
+    console.log('z1', z);
+    x = 10;
+    console.log('z2', z);
+  }
+
+  testSignal() {
+    const x = signal(5);
+    const y = signal(3);
+    const z = computed(() => x() + y());
+    console.log('z1', z());
+    // x.set(10);
+    x.update(val => val * 3);
+    console.log('z2', z());
+    
   }
 
   /**
@@ -49,6 +94,9 @@ export class AppComponent implements OnInit {
     }
   }
 
+  /**
+   * find Mario from list of arrays
+   */
   update() {
     const customer = {
       name: 'Peter',
@@ -71,5 +119,7 @@ export class AppComponent implements OnInit {
     console.log('customer', customer);
     console.log('newCustomer', newCustomer);
   }
+
+  
 
 }
